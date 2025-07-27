@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ 'Editar' if repuesto else 'Nuevo' }} Repuesto</h2>
+<form method="post">
+  {{ form.hidden_tag() }}
+  {{ form.nombre.label }} {{ form.nombre() }}<br>
+  {{ form.categoria.label }} {{ form.categoria() }}<br>
+  {{ form.cantidad.label }} {{ form.cantidad() }}<br>
+  {{ form.descripcion.label }} {{ form.descripcion() }}<br>
+  {{ form.fecha_ingreso.label }} {{ form.fecha_ingreso() }}<br>
+  {{ form.submit() }}
+</form>
+{% endblock %}

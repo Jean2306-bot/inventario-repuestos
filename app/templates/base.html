@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Mi Inventario{% endblock %}</title>
+    <style>
+        /* Estilos básicos opcionales */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        nav {
+            background-color: #333;
+            padding: 1rem;
+        }
+        nav a {
+            color: white;
+            margin-right: 1rem;
+            text-decoration: none;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            padding: 2rem;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+</head>
+<body>
+
+    <!-- Barra de navegación -->
+    <nav>
+        <a href="{{ url_for('main.index') }}">Inicio</a>
+        <a href="{{ url_for('inventory.lista') }}">Repuestos</a>
+        <a href="{{ url_for('auth.logout') }}">Salir</a>
+    </nav>
+
+    <!-- Mensajes flash -->
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div style="color: {% if category == 'error' %}red{% else %}green{% endif %}; margin-bottom: 1rem;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Bloque de contenido específico -->
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>

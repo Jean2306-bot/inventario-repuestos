@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+    <h1>Bienvenido, {{ current_user.username }}</h1>
+    <p>Este es tu inventario de repuestos. Usa el menú de navegación para comenzar.</p>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container"></div>
+  <h2>Lista de Repuestos</h2>
+  <form method="GET" action="{{ url_for('inventory.lista') }}">
+    <label for="categoria">Filtrar por categoría:</label>
+    <select name="categoria" id="categoria">
+        <option value="">Todas</option>
+        <option value="Display">Display</option>
+        <option value="Batería">Batería</option>
+        <option value="Cargador">Cargador</option>
+        <option value="Flex">Flex</option>
+        <option value="Otro">Otro</option>
+    </select>
+
+    <label for="buscar">Buscar por nombre:</label>
+    <input type="text" name="buscar" id="buscar" placeholder="Buscar repuesto...">
+
+    <button type="submit">Aplicar</button>
+  </form>
+    
+  <a href="{{ url_for('inventory.nuevo') }}">Agregar nuevo</a>
+  <ul>
+    {% for repuesto in repuestos %}
+    <li>
+      {{ repuesto.nombre }} - {{ repuesto.categoria }} ({{ repuesto.cantidad }})
+      <a href="{{ url_for('inventory.editar', id=repuesto.id) }}">Editar</a>
+      <a href="{{ url_for('inventory.eliminar', id=repuesto.id) }}">Eliminar</a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

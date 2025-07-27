@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Registrarse{% endblock %}
+
+{% block content %}
+<div class="form-box">
+    <h1>Crear cuenta</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <p>{{ form.username.label }}<br>{{ form.username() }}</p>
+        <p>{{ form.email.label }}<br>{{ form.email() }}</p>
+        <p>{{ form.password.label }}<br>{{ form.password() }}</p>
+        <p>{{ form.confirm_password.label }}<br>{{ form.confirm_password() }}</p>
+
+        <p>{{ form.submit() }}</p>
+    </form>
+
+    <p>¿Ya tienes cuenta? <a href="{{ url_for('auth.login') }}">Inicia sesión</a></p>
+</div>
+{% endblock %}
+

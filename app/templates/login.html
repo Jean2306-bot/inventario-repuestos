@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block content %}
+<div class="form-box"></div>
+    <h1>Iniciar sesión</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <p>{{ form.username.label }}<br>{{ form.username() }}</p>
+        <p>{{ form.emailname.label }}<br>{{ form.emailname() }}</p>
+        <p>{{ form.password.label }}<br>{{ form.password() }}</p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    <p>¿No tienes cuenta? <a href="{{ url_for('auth.register') }}">Regístrate</a></p>
+</div>
+{% endblock %}
+
