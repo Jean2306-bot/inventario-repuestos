@@ -13,6 +13,7 @@ class User(db.Model, UserMixin):
 class Repuesto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
+    precio = db.Column(db.Integer, nullable=False)
     categoria = db.Column(db.String(50), nullable=False)
     cantidad = db.Column(db.Integer, nullable=False)
     descripcion = db.Column(db.Text)

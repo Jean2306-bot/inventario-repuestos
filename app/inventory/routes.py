@@ -31,6 +31,7 @@ def nuevo():
         repuesto = Repuesto(
             nombre=form.nombre.data,
             categoria=form.categoria.data,
+            precio=form.precio.data,
             cantidad=form.cantidad.data,
             descripcion=form.descripcion.data,
             fecha_ingreso=form.fecha_ingreso.data
@@ -48,6 +49,7 @@ def editar(id):
     form = RepuestoForm(obj=repuesto)
     if form.validate_on_submit():
         repuesto.nombre = form.nombre.data
+        repuesto.precio = form.precio.data
         repuesto.categoria = form.categoria.data
         repuesto.cantidad = form.cantidad.data
         repuesto.descripcion = form.descripcion.data
@@ -55,7 +57,7 @@ def editar(id):
         db.session.commit()
         flash('Repuesto actualizado exitosamente!', 'success')
         return redirect(url_for('inventory.lista'))
-    return render_template('repuesto/editar.html', form=form, repuesto=repuesto)
+    return render_template('inventory/editar.html', form=form, repuesto=repuesto)
 
 @inventory_bp.route('/eliminar/<int:id>')
 @login_required

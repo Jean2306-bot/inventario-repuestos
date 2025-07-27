@@ -23,7 +23,7 @@
   <ul>
     {% for repuesto in repuestos %}
     <li>
-      {{ repuesto.nombre }} - {{ repuesto.categoria }} ({{ repuesto.cantidad }})
+      {{ repuesto.nombre }} - {{ repuesto.categoria }} ({{ repuesto.cantidad }}) - ({{ repuesto.precio}})
       <a href="{{ url_for('inventory.editar', id=repuesto.id) }}">Editar</a>
       <a href="{{ url_for('inventory.eliminar', id=repuesto.id) }}">Eliminar</a>
     </li>

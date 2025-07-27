@@ -27,6 +27,7 @@ class RepuestoForm(FlaskForm):
         ('Flex', 'Flex'),
         ('Otro', 'Otro')
     ])
+    precio = IntegerField('Precio', validators=[DataRequired()])
     cantidad = IntegerField('Cantidad', validators=[DataRequired()])
     descripcion = TextAreaField('Descripción')
     fecha_ingreso = DateField('Fecha de ingreso')
