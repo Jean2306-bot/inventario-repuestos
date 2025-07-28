@@ -2,20 +2,46 @@
 {% block title %}Registrarse{% endblock %}
 
 {% block content %}
-<div class="form-box">
-    <h1>Crear cuenta</h1>
-    <form method="POST">
-        {{ form.hidden_tag() }}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow rounded">
+                <div class="card-body">
+                    <h3 class="text-center mb-4">Crear cuenta</h3>
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
 
-        <p>{{ form.username.label }}<br>{{ form.username() }}</p>
-        <p>{{ form.email.label }}<br>{{ form.email() }}</p>
-        <p>{{ form.password.label }}<br>{{ form.password() }}</p>
-        <p>{{ form.confirm_password.label }}<br>{{ form.confirm_password() }}</p>
+                        <div class="mb-3">
+                            {{ form.username.label(class="form-label") }}
+                            {{ form.username(class="form-control", placeholder="Ingrese su nombre de usuario") }}
+                        </div>
 
-        <p>{{ form.submit() }}</p>
-    </form>
+                        <div class="mb-3">
+                            {{ form.email.label(class="form-label") }}
+                            {{ form.email(class="form-control", placeholder="Ingrese su correo electrónico") }}
+                        </div>
 
-    <p>¿Ya tienes cuenta? <a href="{{ url_for('auth.login') }}">Inicia sesión</a></p>
+                        <div class="mb-3">
+                            {{ form.password.label(class="form-label") }}
+                            {{ form.password(class="form-control", placeholder="Cree una contraseña") }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.confirm_password.label(class="form-label") }}
+                            {{ form.confirm_password(class="form-control", placeholder="Confirme la contraseña") }}
+                        </div>
+
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-success") }}
+                        </div>
+                    </form>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('auth.login') }}">¿Ya tienes cuenta? Inicia sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 

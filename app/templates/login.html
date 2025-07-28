@@ -2,16 +2,38 @@
 {% block title %}Iniciar sesión{% endblock %}
 
 {% block content %}
-<div class="form-box"></div>
-    <h1>Iniciar sesión</h1>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <p>{{ form.username.label }}<br>{{ form.username() }}</p>
-        <p>{{ form.emailname.label }}<br>{{ form.emailname() }}</p>
-        <p>{{ form.password.label }}<br>{{ form.password() }}</p>
-        <p>{{ form.submit() }}</p>
-    </form>
-    <p>¿No tienes cuenta? <a href="{{ url_for('auth.register') }}">Regístrate</a></p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow rounded">
+                <div class="card-body">
+                    <h3 class="text-center mb-4">Iniciar sesión</h3>
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+
+                        <div class="mb-3">
+                            {{ form.username.label(class="form-label") }}
+                            {{ form.username(class="form-control", placeholder="Ingrese su nombre de usuario") }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.emailname.label(class="form-label") }}
+                            {{ form.emailname(class="form-control", placeholder="Ingrese su correo") }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.password.label(class="form-label") }}
+                            {{ form.password(class="form-control", placeholder="Ingrese su contraseña") }}
+                        </div>
+
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 

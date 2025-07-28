@@ -40,7 +40,7 @@ def nuevo():
         db.session.commit()
         flash('Repuesto agregado exitosamente!', 'success')
         return redirect(url_for('inventory.lista'))
-    return render_template('inventory/nuevo.html', form=form)
+    return render_template('inventory/formulario_repuesto.html', form=form)
 
 @inventory_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -57,7 +57,7 @@ def editar(id):
         db.session.commit()
         flash('Repuesto actualizado exitosamente!', 'success')
         return redirect(url_for('inventory.lista'))
-    return render_template('inventory/editar.html', form=form, repuesto=repuesto)
+    return render_template('inventory/formulario_repuesto.html', form=form, repuesto=repuesto)
 
 @inventory_bp.route('/eliminar/<int:id>')
 @login_required
