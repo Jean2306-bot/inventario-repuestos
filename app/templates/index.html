@@ -1,61 +1,84 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}Inicio{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4 text-center">Bienvenido, {{ current_user.username }}</h2>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Bienvenido, {{ current_user.username }}</h2>
 
-    <!-- Resumen en tarjetas -->
     <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card text-white bg-primary shadow">
+        <!-- Total de repuestos -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-primary h-100">
                 <div class="card-body text-center">
-                    <h5>Total de Repuestos</h5>
-                    <h2>{{ total_repuestos }}</h2>
+                    <i class="bi bi-box-seam" style="font-size: 2rem;"></i>
+                    <h5 class="card-title mt-2">Total de Repuestos</h5>
+                    <p class="card-text display-6">{{ total_repuestos }}</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-success shadow">
+
+        <!-- Categorías -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-success h-100">
                 <div class="card-body text-center">
-                    <h5>Categorías</h5>
-                    <ul class="list-unstyled">
-                        {% for categoria, cantidad in categoria.items() %}
-                            <li>{{ categoria }}: {{ cantidad }}</li>
-                        {% endfor %}
-                    </ul>
+                    <i class="bi bi-tags-fill" style="font-size: 2rem;"></i>
+                    <h5 class="card-title mt-2">Categorías</h5>
+                    <p class="card-text display-6">{{ categorias|length }}</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-danger shadow">
+
+        <!-- Repuestos con baja cantidad -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-danger h-100">
                 <div class="card-body text-center">
-                    <h5>Repuestos con baja cantidad</h5>
-                    <h3>{{ repuestos_bajos|length }}</h3>
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 2rem;"></i>
+                    <h5 class="card-title mt-2">Repuestos con baja cantidad</h5>
+                    <p class="card-text display-6">{{ repuestos_bajos|length }}</p>
+                    <a href="{{ url_for('inventory.lista') }}?filtro=bajos" class="btn btn-light mt-2 btn-sm">
+                        <i class="bi bi-eye-fill"></i> Ver detalles
+                    </a>
                 </div>
             </div>
         </div>
-    </div>
+
+    
 
     <!-- Últimos repuestos -->
-    <div class="card mb-4 shadow">
-        <div class="card-body">
-            <h5>Últimos repuestos añadidos</h5>
-            <ul class="list-group">
-                {% for repuesto in ultimos_repuestos %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ repuesto.nombre }} ({{ repuesto.categoria }})
-                        <span class="badge bg-secondary">{{ repuesto.fecha_ingreso.strftime('%d/%m/%Y') }}</span>
-                    </li>
-                {% endfor %}
-            </ul>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <strong>Últimos repuestos añadidos</strong>
+                </div>
+                <div class="card-body">
+                    {% if ultimos_repuestos %}
+                        <ul class="list-group">
+                            {% for repuesto in ultimos_repuestos %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ repuesto.nombre }}
+                                <span class="badge bg-secondary">{{ repuesto.fecha_ingreso.strftime('%d/%m/%Y') }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No hay repuestos aún.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-    </div>
 
-    <!-- Botones rápidos -->
-    <div class="d-flex justify-content-center gap-3">
-        <a href="{{ url_for('inventory.list_repuestos') }}" class="btn btn-outline-primary">Ver Repuestos</a>
-        <a href="{{ url_for('inventory.add_repuesto') }}" class="btn btn-primary">Agregar Repuesto</a>
+        <!-- Acciones -->
+        <div class="col-md-4 mt-3 mt-md-0">
+            <div class="d-grid gap-2">
+                <a href="{{ url_for('inventory.lista') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-card-list"></i> Ver Repuestos
+                </a>
+                <a href="{{ url_for('inventory.nuevo') }}" class="btn btn-outline-success btn-lg">
+                    <i class="bi bi-plus-circle"></i> Agregar Repuesto
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -9,18 +9,25 @@ inventory_bp = Blueprint('inventory', __name__, url_prefix='/inventory')
 @inventory_bp.route('/')
 @login_required
 def lista():
+    filtro = request.args.get('filtro')
     categoria = request.args.get('categoria')
     busqueda = request.args.get('busqueda')
 
     query = Repuesto.query
 
+    if filtro == 'bajos':
+        query = query.filter(Repuesto.cantidad <= 3).order_by(Repuesto.cantidad.asc())
+    else:
+        query = query.order_by(Repuesto.nombre.asc())
+
     if categoria and categoria != 'Todas':
-        query = query.filter_by(categoria=categoria)
+        query = query.filter(Repuesto.categoria == categoria)
 
     if busqueda:
-        query = query.filter(Repuesto.nombre.ilike(f'%{busqueda}%'))
+        query = query.filter(Repuesto.nombre.ilike(f"%{busqueda}%"))
 
     repuestos = query.all()
+
     return render_template('inventory/lista.html', repuestos=repuestos)
 
 @inventory_bp.route('/nuevo', methods=['GET', 'POST'])
