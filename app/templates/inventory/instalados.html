@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Instalaciones{% endblock %}
+
+{% block content %}
+<h2>Historial de Instalaciones</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Repuesto</th>
+            <th>Usuario</th>
+            <th>Fecha</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in instalaciones %}
+        <tr>
+            <td>{{ i.repuesto.nombre }}</td>
+            <td>{{ i.usuario.username }}</td>
+            <td>{{ i.fecha.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ i.cantidad }}</td>
+            <td>{{ i.precio }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+

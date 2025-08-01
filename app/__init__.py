@@ -1,14 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from app.models import db, User
 
+
+db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login' #redirige a la página de login si no está autenticado
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+
 
 def create_app():
     app = Flask(__name__)
@@ -17,6 +16,12 @@ def create_app():
 
     db.init_app(app)
     login_manager.init_app(app)
+
+    from app.models import User, Instalacion
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
 
     # Import blueprints
     from app.auth.routes import auth_bp

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
-from app.models import db, Repuesto
+from app.models import db, Repuesto, Instalacion
 from app.forms import RepuestoForm
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 
 inventory_bp = Blueprint('inventory', __name__, url_prefix='/inventory')
@@ -74,3 +74,44 @@ def eliminar(id):
     db.session.commit()
     flash('Repuesto eliminado exitosamente!', 'success')
     return redirect(url_for('inventory.lista'))
+
+@inventory_bp.route('/instalados/agregar/<int:id>')
+@login_required
+def agregar_instalacion(id):
+    repuesto = Repuesto.query.get_or_404(id)
+    
+    if repuesto.cantidad < 1:
+        flash('No hay suficiente stock de este repuesto.', 'warning')
+        return redirect(url_for('inventory.lista'))
+
+    # Crear nueva instalación
+    nueva_instalacion = Instalacion(
+        repuesto_id=repuesto.id,
+        usuario_id=current_user.id,
+        cantidad=1,
+        precio=repuesto.precio
+    )
+
+    repuesto.cantidad -= 1  # Descontar del inventario
+    db.session.add(nueva_instalacion)
+    db.session.commit()
+
+    flash(f'Repuesto "{repuesto.nombre}" marcado como instalado.', 'success')
+    return redirect(url_for('inventory.lista'))
+
+@inventory_bp.route('/instalados')
+@login_required
+def ver_instalados():
+    instalaciones = Instalacion.query.order_by(Instalacion.fecha.desc()).all()
+    return render_template('inventory/instalados.html', instalaciones=instalaciones)
+
+
+@inventory_bp.route('/instalados/instalar', methods=['POST'])
+@login_required
+def instalar_repuesto():
+    id = request.form.get('id')
+    repuesto = Repuesto.query.get_or_404(id)
+    if repuesto.cantidad > 0:
+        repuesto.cantidad -= 1
+        db.session.commit()
+    return redirect(url_for('inventory.ver_instalados'))
