@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash
 from app.models import db, Repuesto, Instalacion
 from app.forms import RepuestoForm
 from flask_login import login_required, current_user
+from datetime import datetime
+import pytz
 
 
 inventory_bp = Blueprint('inventory', __name__, url_prefix='/inventory')
@@ -85,10 +87,14 @@ def agregar_instalacion(id):
         return redirect(url_for('inventory.lista'))
 
     # Crear nueva instalación
+    colombia_tz = pytz.timezone("america/bogota")
+    fecha_colombia = datetime.now(colombia_tz)
+
     nueva_instalacion = Instalacion(
         repuesto_id=repuesto.id,
         usuario_id=current_user.id,
         cantidad=1,
+        fecha=fecha_colombia,
         precio=repuesto.precio
     )
 

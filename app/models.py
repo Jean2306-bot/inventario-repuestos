@@ -24,7 +24,7 @@ class Instalacion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     repuesto_id = db.Column(db.Integer, db.ForeignKey('repuesto.id'), nullable=False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    fecha = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha = db.Column(db.DateTime)
     cantidad = db.Column(db.Integer, default=1)
     precio = db.Column(db.Integer, nullable=False)
 
