@@ -11,10 +11,10 @@ inventory_bp = Blueprint('inventory', __name__, url_prefix='/inventory')
 @login_required
 def lista():
     filtro = request.args.get('filtro')
-    categoria_nombre = request.args.get('categoria')
+    categoria_nombre = request.args.get('categorias')
     busqueda = request.args.get('busqueda')
 
-    query = Repuesto.query
+    query = Repuesto.query.filter_by(usuario_id=current_user.id)
 
     # Filtro por cantidad baja
     if filtro == 'bajos':
@@ -22,9 +22,12 @@ def lista():
     else:
         query = query.order_by(Repuesto.nombre.asc())
 
-    # Filtro por categoría
     if categoria_nombre and categoria_nombre != 'Todas':
-        query = query.join(Category).filter(Category.nombre == categoria_nombre)
+        query = query.join(Category).filter(
+            Category.id == int(categoria_nombre),
+            Category.usuario_id == current_user.id
+        )
+
 
     # Filtro por búsqueda
     if busqueda:
@@ -38,15 +41,17 @@ def lista():
 @inventory_bp.route('/nuevo', methods=['GET', 'POST'])
 @login_required
 def nuevo():
-    form = RepuestoForm()
+    form = RepuestoForm(usuario_id=current_user.id)
+
     if form.validate_on_submit():
         repuesto = Repuesto(
             nombre=form.nombre.data,
-            categoria=form.categoria.data,
+            categorias=form.categorias.data,
             precio=form.precio.data,
             cantidad=form.cantidad.data,
             descripcion=form.descripcion.data,
-            fecha_ingreso=form.fecha_ingreso.data
+            fecha_ingreso=form.fecha_ingreso.data,
+            usuario_id=current_user.id
         )
         db.session.add(repuesto)
         db.session.commit()
@@ -58,11 +63,11 @@ def nuevo():
 @login_required
 def editar(id):
     repuesto = Repuesto.query.get_or_404(id)
-    form = RepuestoForm(obj=repuesto)
+    form = RepuestoForm(usuario_id=current_user.id, obj=repuesto)
     if form.validate_on_submit():
         repuesto.nombre = form.nombre.data
         repuesto.precio = form.precio.data
-        repuesto.categoria = form.categoria.data
+        repuesto.categorias = form.categorias.data
         repuesto.cantidad = form.cantidad.data
         repuesto.descripcion = form.descripcion.data
         repuesto.fecha_ingreso = form.fecha_ingreso.data
@@ -75,6 +80,14 @@ def editar(id):
 @login_required
 def eliminar(id):
     repuesto = Repuesto.query.get_or_404(id)
+    #verificar que el repuesto pertenece al usuario actual
+    if repuesto.usuario_id != current_user.id:
+        flash('No tienes permiso para eliminar este repuesto.', 'danger')
+        return redirect(url_for('inventory.lista'))
+    # Verificar si el repuesto tiene instalaciones asociadas
+    if repuesto.instalaciones:
+        flash('No se puede eliminar un repuesto con instalaciones asociadas.', 'danger')
+        return redirect(url_for('inventory.lista'))
     db.session.delete(repuesto)
     db.session.commit()
     flash('Repuesto eliminado exitosamente!', 'success')
@@ -84,6 +97,11 @@ def eliminar(id):
 @login_required
 def agregar_instalacion(id):
     repuesto = Repuesto.query.get_or_404(id)
+
+    # Verificar que el repuesto pertenece al usuario actual
+    if repuesto.usuario_id != current_user.id:
+        flash('No tienes permiso para instalar este repuesto.', 'danger')
+        return redirect(url_for('inventory.lista'))
     
     if repuesto.cantidad < 1:
         flash('No hay suficiente stock de este repuesto.', 'warning')
@@ -111,26 +129,17 @@ def agregar_instalacion(id):
 @inventory_bp.route('/instalados')
 @login_required
 def ver_instalados():
-    instalaciones = Instalacion.query.order_by(Instalacion.fecha.desc()).all()
+    instalaciones = Instalacion.query.filter_by(usuario_id=current_user.id)\
+        .order_by(Instalacion.fecha.desc()).all()
     return render_template('inventory/instalados.html', instalaciones=instalaciones)
-
-
-@inventory_bp.route('/instalados/instalar', methods=['POST'])
-@login_required
-def instalar_repuesto():
-    id = request.form.get('id')
-    repuesto = Repuesto.query.get_or_404(id)
-    if repuesto.cantidad > 0:
-        repuesto.cantidad -= 1
-        db.session.commit()
-    return redirect(url_for('inventory.ver_instalados'))
 
 @inventory_bp.route('/categorias/crear', methods=['GET', 'POST'])
 @login_required
 def crear_categorias():
     form = CategoryForm()
     if form.validate_on_submit():
-        nueva_categoria = Category(nombre=form.nombre.data)
+        nueva_categoria = Category(nombre=form.nombre.data,
+                                    usuario_id=current_user.id)
         db.session.add(nueva_categoria)
         db.session.commit()
         flash('Categoría creada exitosamente!', 'success')
@@ -141,6 +150,11 @@ def crear_categorias():
 @login_required
 def editar_categoria(id):
     categoria = Category.query.get_or_404(id)
+    # Verificar que la categoría pertenece al usuario actual
+    if categoria.usuario_id != current_user.id:
+        flash('No tienes permiso para editar esta categoría.', 'danger')
+        return redirect(url_for('inventory.lista'))
+    
     form = CategoryForm(obj=categoria)
     if form.validate_on_submit():
         categoria.nombre = form.nombre.data
@@ -153,6 +167,10 @@ def editar_categoria(id):
 @login_required
 def eliminar_categoria(id):
     categoria = Category.query.get_or_404(id)
+    # Verificar que la categoría pertenece al usuario actual
+    if categoria.usuario_id != current_user.id:
+        flash('No tienes permiso para eliminar esta categoría.', 'danger')
+        return redirect(url_for('inventory.lista'))
     db.session.delete(categoria)
     db.session.commit()
     flash('Categoría eliminada exitosamente!', 'success')

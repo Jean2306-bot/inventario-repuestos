@@ -56,7 +56,7 @@
       {% for repuesto in repuestos %}
         <tr>
           <td>{{ repuesto.nombre }}</td>
-          <td>{{ repuesto.categorias }}</td>
+          <td>{{ repuesto.categoria.nombre }}</td>
           <td>{{ repuesto.cantidad }}</td>
           <td>${{ repuesto.precio }}</td>
           <td>

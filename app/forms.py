@@ -21,16 +21,19 @@ class LoginForm(FlaskForm):
 
 class RepuestoForm(FlaskForm):
     nombre = StringField('Nombre', validators=[DataRequired()])
-    categorias = SelectField('Categorías', choices=[])
+    categorias = SelectField('Categorías', choices=[], coerce=int)
     precio = IntegerField('Precio', validators=[DataRequired()])
     cantidad = IntegerField('Cantidad', validators=[DataRequired()])
     descripcion = TextAreaField('Descripción')
     fecha_ingreso = DateField('Fecha de ingreso')
     submit = SubmitField('Guardar')
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, usuario_id=None, *args, **kwargs):
         super(RepuestoForm, self).__init__(*args, **kwargs)
-        self.categorias.choices = [(str(c.id), c.nombre) for c in Category.query.all()]
+        if usuario_id is not None:
+            self.categorias.choices = [
+                (str(c.id), c.nombre) for c in Category.query.filter_by(usuario_id=usuario_id).all()
+            ]
 
 
 class CategoryForm(FlaskForm):

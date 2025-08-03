@@ -13,12 +13,14 @@ class User(db.Model, UserMixin):
 
 class Repuesto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     nombre = db.Column(db.String(100), nullable=False)
     precio = db.Column(db.Integer, nullable=False)
-    categorias = db.Column(db.String(100), db.ForeignKey('category.id'), nullable=False)
+    categorias = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
     cantidad = db.Column(db.Integer, nullable=False)
     descripcion = db.Column(db.Text)
     fecha_ingreso = db.Column(db.DateTime)
+    usuario = db.relationship('User', backref='repuestos')
 
 class Instalacion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,4 +36,7 @@ class Instalacion(db.Model):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(50), unique=True, nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    usuario = db.relationship('User', backref='categorias')
+
     repuestos = db.relationship('Repuesto', backref='categoria', lazy=True)
