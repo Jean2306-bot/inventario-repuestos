@@ -15,7 +15,7 @@ class Repuesto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     precio = db.Column(db.Integer, nullable=False)
-    categoria = db.Column(db.String(50), nullable=False)
+    categorias = db.Column(db.String(100), db.ForeignKey('category.id'), nullable=False)
     cantidad = db.Column(db.Integer, nullable=False)
     descripcion = db.Column(db.Text)
     fecha_ingreso = db.Column(db.DateTime)
@@ -31,3 +31,7 @@ class Instalacion(db.Model):
     repuesto = db.relationship('Repuesto', foreign_keys=[repuesto_id], backref='instalaciones')
     usuario = db.relationship('User', foreign_keys=[usuario_id], backref='instalaciones')
 
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(50), unique=True, nullable=False)
+    repuestos = db.relationship('Repuesto', backref='categoria', lazy=True)

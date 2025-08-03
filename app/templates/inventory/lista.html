@@ -5,33 +5,35 @@
   <h2 class="text-center mb-4">Lista de Repuestos</h2>
 
   <!-- FORMULARIO DE FILTROS -->
-  <form class="row mb-4" method="GET" action="{{ url_for('inventory.lista') }}">
+  <form method="get" class="row g-3 mb-4">
     <div class="col-md-4">
       <label for="categoria" class="form-label">Filtrar por categoría:</label>
-      <select name="categoria" id="categoria" class="form-select">
-        <option value="" {% if request.args.get('categoria') == None %}selected{% endif %}>Todas</option>
-        <option value="Display" {% if request.args.get('categoria') == 'Display' %}selected{% endif %}>Display</option>
-        <option value="Batería" {% if request.args.get('categoria') == 'Batería' %}selected{% endif %}>Batería</option>
-        <option value="Cargador" {% if request.args.get('categoria') == 'Cargador' %}selected{% endif %}>Cargador</option>
-        <option value="Flex" {% if request.args.get('categoria') == 'Flex' %}selected{% endif %}>Flex</option>
-        <option value="Otro" {% if request.args.get('categoria') == 'Otro' %}selected{% endif %}>Otro</option>
+      <select name="categoria" id="categoria" class="form-select" onchange="this.form.submit()">
+        <option value="" {% if not request.args.get('categoria') %}selected{% endif %}>Todas</option>
+        {% for cat in categorias %}
+          <option value="{{ cat.nombre }}" {% if request.args.get('categoria') == cat.nombre %}selected{% endif %}>
+            {{ cat.nombre }}
+          </option>
+        {% endfor %}
       </select>
+      <a href="{{ url_for('inventory.crear_categorias') }}" class="btn btn-primary mt-2">Agregar categoría</a>
+    </div>
+    
 
-    </div>
     <div class="col-md-4">
-      <label for="busqueda" class="form-label">Buscar por nombre:</label>
-      <input type="text" name="busqueda" id="busqueda" class="form-control" placeholder="Buscar repuesto..."
-       value="{{ request.args.get('busqueda', '') }}">
-      <a href="{{ url_for('inventory.lista') }}" class="btn btn-secondary w-100 ms-2">Limpiar</a>
+      <label for="busqueda" class="form-label">Buscar repuesto:</label>
+      <input type="text" name="busqueda" id="busqueda" class="form-control" value="{{ request.args.get('busqueda', '') }}">
     </div>
-    <div class="col-md-4 d-flex align-items-end">
-      <button type="submit" class="btn btn-primary w-100">Aplicar</button>
-      
+
+    <div class="col-md-4">
+      <label for="filtro" class="form-label">Stock:</label>
+      <select name="filtro" id="filtro" class="form-select" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        <option value="bajos" {% if request.args.get('filtro') == 'bajos' %}selected{% endif %}>Stock bajo (≤ 3)</option>
+      </select>
     </div>
-        {% if request.args.get('filtro') %}
-        <input type="hidden" name="filtro" value="{{ request.args.get('filtro') }}">
-    {% endif %}
 </form>
+
 
 
   <!-- BOTÓN NUEVO REPUESTO -->
@@ -54,7 +56,7 @@
       {% for repuesto in repuestos %}
         <tr>
           <td>{{ repuesto.nombre }}</td>
-          <td>{{ repuesto.categoria }}</td>
+          <td>{{ repuesto.categorias }}</td>
           <td>{{ repuesto.cantidad }}</td>
           <td>${{ repuesto.precio }}</td>
           <td>

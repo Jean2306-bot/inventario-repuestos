@@ -1,10 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
-from app.models import db, Repuesto, Instalacion
-from app.forms import RepuestoForm
+from app.models import db, Repuesto, Instalacion, Category
+from app.forms import RepuestoForm, CategoryForm
 from flask_login import login_required, current_user
 from datetime import datetime
 import pytz
-
 
 inventory_bp = Blueprint('inventory', __name__, url_prefix='/inventory')
 
@@ -12,25 +11,29 @@ inventory_bp = Blueprint('inventory', __name__, url_prefix='/inventory')
 @login_required
 def lista():
     filtro = request.args.get('filtro')
-    categoria = request.args.get('categoria')
+    categoria_nombre = request.args.get('categoria')
     busqueda = request.args.get('busqueda')
 
     query = Repuesto.query
 
+    # Filtro por cantidad baja
     if filtro == 'bajos':
         query = query.filter(Repuesto.cantidad <= 3).order_by(Repuesto.cantidad.asc())
     else:
         query = query.order_by(Repuesto.nombre.asc())
 
-    if categoria and categoria != 'Todas':
-        query = query.filter(Repuesto.categoria == categoria)
+    # Filtro por categoría
+    if categoria_nombre and categoria_nombre != 'Todas':
+        query = query.join(Category).filter(Category.nombre == categoria_nombre)
 
+    # Filtro por búsqueda
     if busqueda:
         query = query.filter(Repuesto.nombre.ilike(f"%{busqueda}%"))
 
     repuestos = query.all()
+    categorias = Category.query.all()  # Para mostrar el filtro dinámico
 
-    return render_template('inventory/lista.html', repuestos=repuestos)
+    return render_template('inventory/lista.html', repuestos=repuestos, categorias=categorias)
 
 @inventory_bp.route('/nuevo', methods=['GET', 'POST'])
 @login_required
@@ -121,3 +124,36 @@ def instalar_repuesto():
         repuesto.cantidad -= 1
         db.session.commit()
     return redirect(url_for('inventory.ver_instalados'))
+
+@inventory_bp.route('/categorias/crear', methods=['GET', 'POST'])
+@login_required
+def crear_categorias():
+    form = CategoryForm()
+    if form.validate_on_submit():
+        nueva_categoria = Category(nombre=form.nombre.data)
+        db.session.add(nueva_categoria)
+        db.session.commit()
+        flash('Categoría creada exitosamente!', 'success')
+        return redirect(url_for('inventory.lista'))
+    return render_template('inventory/formulario_categoria.html', form=form)
+
+@inventory_bp.route('/categorias/editar/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editar_categoria(id):
+    categoria = Category.query.get_or_404(id)
+    form = CategoryForm(obj=categoria)
+    if form.validate_on_submit():
+        categoria.nombre = form.nombre.data
+        db.session.commit()
+        flash('Categoría actualizada exitosamente!', 'success')
+        return redirect(url_for('inventory.lista'))
+    return render_template('inventory/formulario_categoria.html', form=form, categoria=categoria)
+
+@inventory_bp.route('/categorias/eliminar/<int:id>')
+@login_required
+def eliminar_categoria(id):
+    categoria = Category.query.get_or_404(id)
+    db.session.delete(categoria)
+    db.session.commit()
+    flash('Categoría eliminada exitosamente!', 'success')
+    return redirect(url_for('inventory.lista'))

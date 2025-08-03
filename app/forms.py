@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, EmailField
 from wtforms import IntegerField, SelectField, TextAreaField, DateField
 from wtforms.validators import DataRequired, Email, Length, EqualTo
+from app.models import Category
 
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=64)])
@@ -20,15 +21,18 @@ class LoginForm(FlaskForm):
 
 class RepuestoForm(FlaskForm):
     nombre = StringField('Nombre', validators=[DataRequired()])
-    categoria = SelectField('Categoría', choices=[
-        ('Display', 'Display'),
-        ('Batería', 'Batería'),
-        ('Cargador', 'Cargador'),
-        ('Flex', 'Flex'),
-        ('Otro', 'Otro')
-    ])
+    categorias = SelectField('Categorías', choices=[])
     precio = IntegerField('Precio', validators=[DataRequired()])
     cantidad = IntegerField('Cantidad', validators=[DataRequired()])
     descripcion = TextAreaField('Descripción')
     fecha_ingreso = DateField('Fecha de ingreso')
+    submit = SubmitField('Guardar')
+
+    def __init__(self, *args, **kwargs):
+        super(RepuestoForm, self).__init__(*args, **kwargs)
+        self.categorias.choices = [(str(c.id), c.nombre) for c in Category.query.all()]
+
+
+class CategoryForm(FlaskForm):
+    nombre = StringField('Nombre de la categoría', validators=[DataRequired()])
     submit = SubmitField('Guardar')
