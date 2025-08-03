@@ -8,14 +8,16 @@
   <form method="get" class="row g-3 mb-4">
     <div class="col-md-4">
       <label for="categoria" class="form-label">Filtrar por categoría:</label>
-      <select name="categoria" id="categoria" class="form-select" onchange="this.form.submit()">
-        <option value="" {% if not request.args.get('categoria') %}selected{% endif %}>Todas</option>
+      <select name="categorias" id="categorias" class="form-select" onchange="this.form.submit()">
+        <option value="" {% if not request.args.get('categorias') %}selected{% endif %}>Todas</option>
         {% for cat in categorias %}
-          <option value="{{ cat.nombre }}" {% if request.args.get('categoria') == cat.nombre %}selected{% endif %}>
+          <option value="{{ cat.nombre }}" {% if request.args.get('categorias') == cat.nombre %}selected{% endif %}>
             {{ cat.nombre }}
           </option>
         {% endfor %}
       </select>
+      <!-- Botón para borrar filtros -->
+      <a href="{{ url_for('inventory.lista') }}" class="btn btn-outline-danger mt-2">Borrar filtros</a>
       <a href="{{ url_for('inventory.crear_categorias') }}" class="btn btn-primary mt-2">Agregar categoría</a>
     </div>
     

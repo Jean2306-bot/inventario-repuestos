@@ -4,6 +4,9 @@ from app.forms import RepuestoForm, CategoryForm
 from flask_login import login_required, current_user
 from datetime import datetime
 import pytz
+from flask import send_file
+import io
+from openpyxl import Workbook
 
 inventory_bp = Blueprint('inventory', __name__, url_prefix='/inventory')
 
@@ -14,7 +17,7 @@ def lista():
     categoria_nombre = request.args.get('categorias')
     busqueda = request.args.get('busqueda')
 
-    query = Repuesto.query.filter_by(usuario_id=current_user.id)
+    query = Repuesto.query.filter(Repuesto.usuario_id == current_user.id)
 
     # Filtro por cantidad baja
     if filtro == 'bajos':
@@ -22,9 +25,10 @@ def lista():
     else:
         query = query.order_by(Repuesto.nombre.asc())
 
+
     if categoria_nombre and categoria_nombre != 'Todas':
         query = query.join(Category).filter(
-            Category.id == int(categoria_nombre),
+            Category.nombre == categoria_nombre,
             Category.usuario_id == current_user.id
         )
 
@@ -34,7 +38,7 @@ def lista():
         query = query.filter(Repuesto.nombre.ilike(f"%{busqueda}%"))
 
     repuestos = query.all()
-    categorias = Category.query.all()  # Para mostrar el filtro dinámico
+    categorias = Category.query.filter_by(usuario_id=current_user.id).all()  # Para mostrar el filtro dinámico
 
     return render_template('inventory/lista.html', repuestos=repuestos, categorias=categorias)
 
@@ -175,3 +179,76 @@ def eliminar_categoria(id):
     db.session.commit()
     flash('Categoría eliminada exitosamente!', 'success')
     return redirect(url_for('inventory.lista'))
+
+@inventory_bp.route('/instalados/expcel')
+@login_required
+def descargar_excel():
+    instalaciones = Instalacion.query.filter_by(usuario_id=current_user.id).all()
+    
+    # Crear un libro de Excel
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Instalaciones"
+
+    # Agregar encabezados
+    ws.append(['ID', 'Repuesto', 'Usuario', 'Fecha', 'Cantidad', 'Precio'])
+
+    # Agregar datos de las instalaciones
+    for inst in instalaciones:
+        ws.append([
+            inst.id,
+            inst.repuesto.nombre,
+            inst.usuario.username,
+            inst.fecha.strftime('%Y-%m-%d %H:%M'),
+            inst.cantidad,
+            inst.precio
+        ])
+
+    #guardar el archivo en memoria
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    # Devolver el archivo como respuesta
+    return send_file(output, as_attachment=True, download_name='instalaciones.xlsx')
+
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+
+@inventory_bp.route('/instalados/pdf')
+@login_required
+def descargar_pdf():
+    instalaciones = Instalacion.query.order_by(Instalacion.fecha.desc()).all()
+    
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(200, height - 40, "Historial de Instalaciones")
+
+    c.setFont("Helvetica", 10)
+    y = height - 70
+
+    c.drawString(40, y, "Repuesto")
+    c.drawString(150, y, "Usuario")
+    c.drawString(250, y, "Fecha")
+    c.drawString(350, y, "Cantidad")
+    c.drawString(420, y, "Precio")
+    y -= 20
+
+    for i in instalaciones:
+        if y < 50:
+            c.showPage()
+            y = height - 50
+
+        c.drawString(40, y, i.repuesto.nombre)
+        c.drawString(150, y, i.usuario.username)
+        c.drawString(250, y, i.fecha.strftime('%Y-%m-%d %H:%M'))
+        c.drawString(350, y, str(i.cantidad))
+        c.drawString(420, y, f"${i.precio}")
+        y -= 18
+
+    c.save()
+    buffer.seek(0)
+    return send_file(buffer, download_name="instalaciones.pdf", as_attachment=True)
