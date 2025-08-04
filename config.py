@@ -9,7 +9,11 @@ class DevelopmentConfig(Config):
     DEBUG = True
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    # Render te pone DATABASE_URL, pero SQLAlchemy requiere "postgresql://" y no "postgres://"
+    uri = os.getenv('DATABASE_URL')
+    if uri and uri.startswith('postgres://'):
+        uri = uri.replace('postgres://', 'postgresql://', 1)
+    SQLALCHEMY_DATABASE_URI = uri
     DEBUG = False
 
 class TestingConfig(Config):
