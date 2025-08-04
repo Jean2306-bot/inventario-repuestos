@@ -1,6 +1,7 @@
 venv/
 __pycache__/
 *.pyc
-instance/
+instance/*
+!instance/inventario.db
 .env
 *.sqlite3
