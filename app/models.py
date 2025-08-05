@@ -35,8 +35,11 @@ class Instalacion(db.Model):
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(50), unique=True, nullable=False)
+    nombre = db.Column(db.String(50), nullable=False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     usuario = db.relationship('User', backref='categorias')
 
     repuestos = db.relationship('Repuesto', backref='categoria', lazy=True)
+    __table_args__ = (
+        db.UniqueConstraint('nombre', 'usuario_id', name='unique_category_per_user'),
+    )
