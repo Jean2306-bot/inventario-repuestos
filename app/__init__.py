@@ -25,10 +25,6 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     migrate.init_app(app, db)
-    #👇 Este bloque es temporal para crear las tablas si no existen
-    with app.app_context():
-        from app.models import User, Instalacion
-        db.create_all()
 
     from app.models import User, Instalacion
 
