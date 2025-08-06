@@ -142,13 +142,22 @@ def ver_instalados():
 def crear_categorias():
     form = CategoryForm()
     if form.validate_on_submit():
-        nueva_categoria = Category(nombre=form.nombre.data,
-                                    usuario_id=current_user.id)
-        db.session.add(nueva_categoria)
-        db.session.commit()
-        flash('Categoría creada exitosamente!', 'success')
-        return redirect(url_for('inventory.lista'))
+        nombre = form.nombre.data.strip().lower()
+
+        # 🔍 Verifica si ya existe esa categoría para el usuario actual
+        categoria_existente = Category.query.filter_by(nombre=nombre, usuario_id=current_user.id).first()
+
+        if categoria_existente:
+            flash('Ya tienes una categoría con ese nombre.', 'warning')
+        else:
+            nueva_categoria = Category(nombre=nombre, usuario_id=current_user.id)
+            db.session.add(nueva_categoria)
+            db.session.commit()
+            flash('Categoría creada exitosamente!', 'success')
+            return redirect(url_for('inventory.lista'))
+
     return render_template('inventory/formulario_categoria.html', form=form)
+
 
 @inventory_bp.route('/categorias/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
