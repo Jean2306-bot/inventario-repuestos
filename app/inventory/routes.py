@@ -7,6 +7,7 @@ import pytz
 from flask import send_file
 import io
 from openpyxl import Workbook
+from sqlalchemy import or_
 
 inventory_bp = Blueprint('inventory', __name__, url_prefix='/inventory')
 
@@ -16,6 +17,7 @@ def lista():
     filtro = request.args.get('filtro')
     categoria_nombre = request.args.get('categorias')
     busqueda = request.args.get('busqueda')
+    codigo = request.args.get('codigo')
 
     query = Repuesto.query.filter(Repuesto.usuario_id == current_user.id)
 
@@ -23,7 +25,7 @@ def lista():
     if filtro == 'bajos':
         query = query.filter(Repuesto.cantidad <= 3).order_by(Repuesto.cantidad.asc())
     else:
-        query = query.order_by(Repuesto.nombre.asc())
+        query = query.order_by(Repuesto.modelo.asc())
 
 
     if categoria_nombre and categoria_nombre != 'Todas':
@@ -35,7 +37,12 @@ def lista():
 
     # Filtro por búsqueda
     if busqueda:
-        query = query.filter(Repuesto.nombre.ilike(f"%{busqueda}%"))
+        query = query.filter(or_(
+            Repuesto.modelo.ilike(f"%{busqueda}%"),
+            Repuesto.marca.ilike(f"%{busqueda}%"),
+            Repuesto.compatibilidad.ilike(f"%{busqueda}%"),
+            Repuesto.codigo.ilike(f"%{busqueda}%")
+        ))
 
     repuestos = query.all()
     categorias = Category.query.filter_by(usuario_id=current_user.id).all()  # Para mostrar el filtro dinámico
@@ -49,13 +56,16 @@ def nuevo():
 
     if form.validate_on_submit():
         repuesto = Repuesto(
-            nombre=form.nombre.data,
-            categorias=form.categorias.data,
-            precio=form.precio.data,
-            cantidad=form.cantidad.data,
-            descripcion=form.descripcion.data,
-            fecha_ingreso=form.fecha_ingreso.data,
-            usuario_id=current_user.id
+            codigo = form.codigo.data,
+            marca = form.marca.data,
+            modelo = form.modelo.data,
+            categorias = form.categorias.data,
+            precio_c = form.precio_c.data,
+            precio_v = form.precio_v.data,
+            cantidad = form.cantidad.data,
+            compatibilidad = form.compatibilidad.data,
+            fecha_ingreso = form.fecha_ingreso.data,
+            usuario_id = current_user.id
         )
         db.session.add(repuesto)
         db.session.commit()
@@ -69,11 +79,14 @@ def editar(id):
     repuesto = Repuesto.query.get_or_404(id)
     form = RepuestoForm(usuario_id=current_user.id, obj=repuesto)
     if form.validate_on_submit():
-        repuesto.nombre = form.nombre.data
-        repuesto.precio = form.precio.data
+        repuesto.codigo = form.marca.data
+        repuesto.marca = form.marca.data
+        repuesto.modelo = form.modelo.data
+        repuesto.precio_c = form.precio_c.data
+        repuesto.precio_v = form.precio_v.data
         repuesto.categorias = form.categorias.data
         repuesto.cantidad = form.cantidad.data
-        repuesto.descripcion = form.descripcion.data
+        repuesto.compatibilidad = form.compatibilidad.data
         repuesto.fecha_ingreso = form.fecha_ingreso.data
         db.session.commit()
         flash('Repuesto actualizado exitosamente!', 'success')
@@ -97,6 +110,16 @@ def eliminar(id):
     flash('Repuesto eliminado exitosamente!', 'success')
     return redirect(url_for('inventory.lista'))
 
+@inventory_bp.route('/ver/<int:id>')
+@login_required
+def ver(id):
+    repuesto = Repuesto.query.get_or_404(id)
+    # Verificar que el repuesto pertenece al usuario actual
+    if repuesto.usuario_id != current_user.id:
+        flash('No tienes permiso para ver este repuesto.', 'danger')
+        return redirect(url_for('inventory.lista'))
+    return render_template('inventory/ver_repuesto.html', repuesto=repuesto)
+
 @inventory_bp.route('/instalados/agregar/<int:id>')
 @login_required
 def agregar_instalacion(id):
@@ -116,18 +139,19 @@ def agregar_instalacion(id):
     fecha_colombia = datetime.now(colombia_tz)
 
     nueva_instalacion = Instalacion(
-        repuesto_id=repuesto.id,
-        usuario_id=current_user.id,
-        cantidad=1,
-        fecha=fecha_colombia,
-        precio=repuesto.precio
+        repuesto_id = repuesto.id,
+        usuario_id = current_user.id,
+        cantidad = 1,
+        fecha = fecha_colombia,
+        precio_c = repuesto.precio_c,
+        precio_v = repuesto.precio_v
     )
 
     repuesto.cantidad -= 1  # Descontar del inventario
     db.session.add(nueva_instalacion)
     db.session.commit()
 
-    flash(f'Repuesto "{repuesto.nombre}" marcado como instalado.', 'success')
+    flash(f'Repuesto "{repuesto.modelo}" marcado como instalado.', 'success')
     return redirect(url_for('inventory.lista'))
 
 @inventory_bp.route('/instalados')
@@ -136,6 +160,30 @@ def ver_instalados():
     instalaciones = Instalacion.query.filter_by(usuario_id=current_user.id)\
         .order_by(Instalacion.fecha.desc()).all()
     return render_template('inventory/instalados.html', instalaciones=instalaciones)
+
+@inventory_bp.route('/instalados/eliminar/<int:id>', methods=['POST'])
+@login_required
+def eliminar_instalacion(id):
+    instalacion = Instalacion.query.get_or_404(id)
+
+    if instalacion.usuario_id != current_user.id:
+        flash("No tienes permiso para eliminar esta instalación.", "danger")
+        return redirect(url_for('inventory.ver_instalados'))
+
+    # 1️⃣ Obtener el repuesto asociado
+    repuesto = Repuesto.query.get(instalacion.repuesto_id)
+
+    if repuesto:
+        # 2️⃣ Devolver la cantidad
+        repuesto.cantidad += instalacion.cantidad
+
+    # 3️⃣ Eliminar instalación
+    db.session.delete(instalacion)
+    db.session.commit()
+
+    flash("Instalación eliminada y cantidad devuelta al inventario", "success")
+    return redirect(url_for('inventory.ver_instalados'))
+
 
 @inventory_bp.route('/categorias/crear', methods=['GET', 'POST'])
 @login_required
@@ -206,11 +254,12 @@ def descargar_excel():
     for inst in instalaciones:
         ws.append([
             inst.id,
-            inst.repuesto.nombre,
+            inst.repuesto.modelo,
             inst.usuario.username,
             inst.fecha.strftime('%Y-%m-%d %H:%M'),
             inst.cantidad,
-            inst.precio
+            inst.precio_c,
+            inst.precio_v
         ])
 
     #guardar el archivo en memoria
@@ -251,11 +300,11 @@ def descargar_pdf():
             c.showPage()
             y = height - 50
 
-        c.drawString(40, y, i.repuesto.nombre)
+        c.drawString(40, y, i.repuesto.marca + ' ' + i.repuesto.modelo)
         c.drawString(150, y, i.usuario.username)
         c.drawString(250, y, i.fecha.strftime('%Y-%m-%d %H:%M'))
         c.drawString(350, y, str(i.cantidad))
-        c.drawString(420, y, f"${i.precio}")
+        c.drawString(420, y, f"${i.precio_c} / ${i.precio_v}")
         y -= 18
 
     c.save()

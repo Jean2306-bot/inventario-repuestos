@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Ver Repuesto{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center">
+          <h4>Detalles del Repuesto</h4>
+            <a href="{{ url_for('inventory.lista') }}" class="btn btn-secondary btn-sm float-end">X</a>
+        </div>
+        <div class="card-body">
+          <p><strong>Código:</strong> {{ repuesto.codigo }}</p>
+          <p><strong>Marca:</strong> {{ repuesto.marca }}</p>
+          <p><strong>Modelo:</strong> {{ repuesto.modelo }}</p>
+          <p><strong>Precio de Costo:</strong> {{ repuesto.precio_c }}</p>
+          <p><strong>Precio de Venta:</strong> {{ repuesto.precio_v }}</p>
+          <p><strong>Cantidad:</strong> {{ repuesto.cantidad }}</p>
+          <p><strong>Compatibilidad:</strong> {{ repuesto.compatibilidad }}</p>
+          <p><strong>Fecha de Ingreso:</strong> {{ repuesto.fecha_ingreso }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

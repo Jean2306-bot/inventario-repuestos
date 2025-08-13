@@ -11,17 +11,27 @@
         <div class="card-body">
           <form method="post">
             {{ form.hidden_tag() }}
+            <div class="mb-3">
+              {{ form.codigo.label(class="form-label") }}
+              {{ form.codigo(class="form-control") }}
+            </div>
+            <div class="mb-3">
+              {{ form.marca.label(class="form-label") }}
+              {{ form.marca(class="form-control") }}
 
             <div class="mb-3">
-              {{ form.nombre.label(class="form-label") }}
-              {{ form.nombre(class="form-control") }}
+              {{ form.modelo.label(class="form-label") }}
+              {{ form.modelo(class="form-control") }}
             </div>
 
             <div class="mb-3">
-              {{ form.precio.label(class="form-label") }}
-              {{ form.precio(class="form-control") }}
+              {{ form.precio_c.label(class="form-label") }}
+              {{ form.precio_c(class="form-control") }}
             </div>
-
+            <div class="mb-3">
+              {{ form.precio_v.label(class="form-label") }}
+              {{ form.precio_v(class="form-control") }}
+            </div>
             <div class="mb-3">
               {{ form.categorias.label(class="form-label") }}
               {{ form.categorias(class="form-select") }}
@@ -33,8 +43,8 @@
             </div>
 
             <div class="mb-3">
-              {{ form.descripcion.label(class="form-label") }}
-              {{ form.descripcion(class="form-control") }}
+              {{ form.compatibilidad.label(class="form-label") }}
+              {{ form.compatibilidad(class="form-control") }}
             </div>
 
             <div class="mb-3">

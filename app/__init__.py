@@ -35,10 +35,12 @@ def create_app():
     from app.auth.routes import auth_bp
     from app.main.routes import main_bp
     from app.inventory.routes import inventory_bp
+    from app.balance import balance_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(inventory_bp)
+    app.register_blueprint(balance_bp)
 
     return app
 

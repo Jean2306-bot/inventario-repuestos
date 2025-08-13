@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">📊 Balance General</h2>
+
+    <table class="table table-bordered table-striped text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>Concepto</th>
+                <th>Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>💰 Ganancias Totales</td>
+                <td>${{ "{:,.0f}".format(ganancias) }}</td>
+            </tr>
+            <tr>
+                <td>📦 Capital Invertido (Inventario actual)</td>
+                <td>${{ "{:,.0f}".format(capital) }}</td>
+            </tr>
+            <tr>
+                <td>🏷️ Valor de Inventario Actual (precio venta)</td>
+                <td>${{ "{:,.0f}".format(valor_inventario) }}</td>
+            </tr>
+            <tr>
+                <td>🛒 Total Ventas</td>
+                <td>${{ "{:,.0f}".format(ventas) }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

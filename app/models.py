@@ -13,12 +13,15 @@ class User(db.Model, UserMixin):
 
 class Repuesto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    codigo = db.Column(db.String(100), unique=True, nullable=False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    nombre = db.Column(db.String(100), nullable=False)
-    precio = db.Column(db.Integer, nullable=False)
+    marca = db.Column(db.String(100), nullable=True)
+    modelo = db.Column(db.String(100), nullable=False)
+    precio_c = db.Column(db.Integer, nullable=False)
+    precio_v = db.Column(db.Integer, nullable=False)
     categorias = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
     cantidad = db.Column(db.Integer, nullable=False)
-    descripcion = db.Column(db.Text)
+    compatibilidad = db.Column(db.Text)
     fecha_ingreso = db.Column(db.DateTime)
     usuario = db.relationship('User', backref='repuestos')
 
@@ -28,7 +31,8 @@ class Instalacion(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     fecha = db.Column(db.DateTime)
     cantidad = db.Column(db.Integer, default=1)
-    precio = db.Column(db.Integer, nullable=False)
+    precio_c = db.Column(db.Integer, nullable=False)
+    precio_v = db.Column(db.Integer, nullable=False)
 
     repuesto = db.relationship('Repuesto', foreign_keys=[repuesto_id], backref='instalaciones')
     usuario = db.relationship('User', foreign_keys=[usuario_id], backref='instalaciones')
@@ -43,3 +47,16 @@ class Category(db.Model):
     __table_args__ = (
         db.UniqueConstraint('nombre', 'usuario_id', name='unique_category_per_user'),
     )
+
+class Balance(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    fecha = db.Column(db.DateTime, default=datetime.utcnow)
+    marca = db.Column(db.String(100), nullable=False)
+    modelo = db.Column(db.String(100), nullable=False)
+    cantidad = db.Column(db.Integer, nullable=False)
+    precio_c = db.Column(db.Integer, nullable=False)
+    precio_v = db.Column(db.Integer, nullable=False)
+    ganancia = db.Column(db.Integer, nullable=False)
+    usuario = db.relationship('User', backref='balances')
+    

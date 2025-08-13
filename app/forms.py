@@ -20,11 +20,14 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class RepuestoForm(FlaskForm):
-    nombre = StringField('Nombre', validators=[DataRequired()])
+    codigo = StringField('Código', validators=[DataRequired()])
+    marca = StringField('Marca', validators=[DataRequired()])
+    modelo = StringField('Modelo', validators=[DataRequired()])
     categorias = SelectField('Categorías', choices=[], coerce=int)
-    precio = IntegerField('Precio', validators=[DataRequired()])
+    precio_c = IntegerField('Precio de compra', validators=[DataRequired()])
+    precio_v = IntegerField('Precio de venta', validators=[DataRequired()])
     cantidad = IntegerField('Cantidad', validators=[DataRequired()])
-    descripcion = TextAreaField('Descripción')
+    compatibilidad = TextAreaField('Compatibilidad')
     fecha_ingreso = DateField('Fecha de ingreso')
     submit = SubmitField('Guardar')
 

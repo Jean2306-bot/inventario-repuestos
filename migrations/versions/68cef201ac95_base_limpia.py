@@ -1,8 +1,8 @@
-"""estructura inicial
+"""Base limpia
 
-Revision ID: f2b9c196b1b1
+Revision ID: 68cef201ac95
 Revises: 
-Create Date: 2025-08-03 07:55:31.152333
+Create Date: 2025-08-13 05:37:20.899278
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f2b9c196b1b1'
+revision = '68cef201ac95'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,10 +22,23 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=64), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
-    sa.Column('password', sa.String(length=128), nullable=False),
+    sa.Column('password', sa.Text(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('username')
+    )
+    op.create_table('balance',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('usuario_id', sa.Integer(), nullable=False),
+    sa.Column('fecha', sa.DateTime(), nullable=True),
+    sa.Column('marca', sa.String(length=100), nullable=False),
+    sa.Column('modelo', sa.String(length=100), nullable=False),
+    sa.Column('cantidad', sa.Integer(), nullable=False),
+    sa.Column('precio_c', sa.Integer(), nullable=False),
+    sa.Column('precio_v', sa.Integer(), nullable=False),
+    sa.Column('ganancia', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['usuario_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('category',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -33,20 +46,24 @@ def upgrade():
     sa.Column('usuario_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['usuario_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('nombre')
+    sa.UniqueConstraint('nombre', 'usuario_id', name='unique_category_per_user')
     )
     op.create_table('repuesto',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('codigo', sa.String(length=100), nullable=False),
     sa.Column('usuario_id', sa.Integer(), nullable=False),
-    sa.Column('nombre', sa.String(length=100), nullable=False),
-    sa.Column('precio', sa.Integer(), nullable=False),
+    sa.Column('marca', sa.String(length=100), nullable=True),
+    sa.Column('modelo', sa.String(length=100), nullable=False),
+    sa.Column('precio_c', sa.Integer(), nullable=False),
+    sa.Column('precio_v', sa.Integer(), nullable=False),
     sa.Column('categorias', sa.Integer(), nullable=False),
     sa.Column('cantidad', sa.Integer(), nullable=False),
-    sa.Column('descripcion', sa.Text(), nullable=True),
+    sa.Column('compatibilidad', sa.Text(), nullable=True),
     sa.Column('fecha_ingreso', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['categorias'], ['category.id'], ),
     sa.ForeignKeyConstraint(['usuario_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('codigo')
     )
     op.create_table('instalacion',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -54,7 +71,8 @@ def upgrade():
     sa.Column('usuario_id', sa.Integer(), nullable=False),
     sa.Column('fecha', sa.DateTime(), nullable=True),
     sa.Column('cantidad', sa.Integer(), nullable=True),
-    sa.Column('precio', sa.Integer(), nullable=False),
+    sa.Column('precio_c', sa.Integer(), nullable=False),
+    sa.Column('precio_v', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['repuesto_id'], ['repuesto.id'], ),
     sa.ForeignKeyConstraint(['usuario_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -67,5 +85,6 @@ def downgrade():
     op.drop_table('instalacion')
     op.drop_table('repuesto')
     op.drop_table('category')
+    op.drop_table('balance')
     op.drop_table('user')
     # ### end Alembic commands ###
