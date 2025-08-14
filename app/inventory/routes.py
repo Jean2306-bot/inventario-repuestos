@@ -79,7 +79,7 @@ def editar(id):
     repuesto = Repuesto.query.get_or_404(id)
     form = RepuestoForm(usuario_id=current_user.id, obj=repuesto)
     if form.validate_on_submit():
-        repuesto.codigo = form.marca.data
+        repuesto.codigo = form.codigo.data
         repuesto.marca = form.marca.data
         repuesto.modelo = form.modelo.data
         repuesto.precio_c = form.precio_c.data
