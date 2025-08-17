@@ -30,9 +30,9 @@ body.flash-active::before {
 
 .flash-message {
   margin-bottom: 0;
-  padding: 15px;
-  border-radius: 8px;
-  color: white;
+  padding: 25px;
+  border-radius: 10px;
+  color: rgb(17, 2, 2);
   font-size: 16px;
   font-weight: bold;
 }
