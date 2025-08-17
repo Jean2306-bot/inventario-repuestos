@@ -12,12 +12,7 @@ document.addEventListener("DOMContentLoaded", function() {
         closeFlash();
       }
     });
-
-    // Cerrar con la X
-    document.querySelectorAll(".btn-close").forEach(btn => {
-      btn.addEventListener("click", closeFlash);
-    });
-
+    
     // Autocierre a los 1 segundos
     setTimeout(closeFlash, 2000);
 

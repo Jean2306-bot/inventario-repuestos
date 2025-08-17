@@ -2,46 +2,113 @@
 {% block title %}Registrarse{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow rounded">
-                <div class="card-body">
-                    <h3 class="text-center mb-4">Crear cuenta</h3>
-                    <form method="POST">
-                        {{ form.hidden_tag() }}
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 90vh;">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-4">
+                <h3 class="text-center mb-4 fw-bold">📝 Crear cuenta</h3>
+                
+                <form method="POST" id="registroForm">
+                    {{ form.hidden_tag() }}
 
-                        <div class="mb-3">
-                            {{ form.username.label(class="form-label") }}
-                            {{ form.username(class="form-control", placeholder="Ingrese su nombre de usuario") }}
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.email.label(class="form-label") }}
-                            {{ form.email(class="form-control", placeholder="Ingrese su correo electrónico") }}
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.password.label(class="form-label") }}
-                            {{ form.password(class="form-control", placeholder="Cree una contraseña") }}
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.confirm_password.label(class="form-label") }}
-                            {{ form.confirm_password(class="form-control", placeholder="Confirme la contraseña") }}
-                        </div>
-
-                        <div class="d-grid">
-                            {{ form.submit(class="btn btn-success") }}
-                        </div>
-                    </form>
-                    <div class="text-center mt-3">
-                        <a href="{{ url_for('auth.login') }}">¿Ya tienes cuenta? Inicia sesión</a>
+                    <!-- Usuario -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa fa-user me-1"></i> Usuario</label>
+                        {{ form.username(class="form-control form-control-lg rounded-pill", id="username", placeholder="Ingrese su nombre de usuario") }}
+                        <span class="error" id="userError"></span>
                     </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa fa-envelope me-1"></i> Correo electrónico</label>
+                        {{ form.email(class="form-control form-control-lg rounded-pill", id="email", placeholder="Ingrese su correo electrónico") }}
+                        <span class="error" id="emailError"></span>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa fa-lock me-1"></i> Contraseña</label>
+                        {{ form.password(class="form-control form-control-lg rounded-pill", id="password", placeholder="Cree una contraseña") }}
+                        <span class="error" id="passError"></span>
+                    </div>
+
+                    <!-- Confirmar Contraseña -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa fa-lock me-1"></i> Confirmar Contraseña</label>
+                        {{ form.confirm_password(class="form-control form-control-lg rounded-pill", id="confirmPassword", placeholder="Confirme la contraseña") }}
+                        <span class="error" id="confirmError"></span>
+                    </div>
+
+                    <!-- Botón -->
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-success btn-lg rounded-pill fw-bold shadow-sm") }}
+                    </div>
+                </form>
+
+                <!-- Link hacia login -->
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('auth.login') }}" class="text-decoration-none">¿Ya tienes cuenta? <b>Inicia sesión</b></a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
+<!-- FontAwesome para íconos -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script>
+  document.getElementById("registroForm").addEventListener("submit", function(event) {
+    let valid = true;
+
+    // Usuario no vacío
+    const username = document.getElementById("username").value.trim();
+    if (username === "") {
+      document.getElementById("userError").textContent = "El usuario es obligatorio";
+      valid = false;
+    } else {
+      document.getElementById("userError").textContent = "";
+    }
+
+    // Email válido
+    const email = document.getElementById("email").value;
+    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+    if (!emailRegex.test(email)) {
+      document.getElementById("emailError").textContent = "Email no válido";
+      valid = false;
+    } else {
+      document.getElementById("emailError").textContent = "";
+    }
+
+    // Contraseña mínimo 6 caracteres
+    const password = document.getElementById("password").value;
+    if (password.length < 6) {
+      document.getElementById("passError").textContent = "La contraseña debe tener al menos 6 caracteres";
+      valid = false;
+    } else {
+      document.getElementById("passError").textContent = "";
+    }
+
+    // Confirmación de contraseña
+    const confirm = document.getElementById("confirmPassword").value;
+    if (password !== confirm) {
+      document.getElementById("confirmError").textContent = "Las contraseñas no coinciden";
+      valid = false;
+    } else {
+      document.getElementById("confirmError").textContent = "";
+    }
+
+    if (!valid) {
+      event.preventDefault();
+    }
+  });
+</script>
+
+<style>
+.error {
+    color: red;
+    font-size: 13px;
+    margin-left: 5px;
+}
+</style>
+{% endblock %}

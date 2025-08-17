@@ -2,38 +2,98 @@
 {% block title %}Iniciar sesión{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow rounded">
-                <div class="card-body">
-                    <h3 class="text-center mb-4">Iniciar sesión</h3>
-                    <form method="POST">
-                        {{ form.hidden_tag() }}
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 90vh;">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-4">
+                <h3 class="text-center mb-4 fw-bold">🔑 Iniciar sesión</h3>
+                
+                <form method="POST" id="loginForm">
+                    {{ form.hidden_tag() }}
 
-                        <div class="mb-3">
-                            {{ form.username.label(class="form-label") }}
-                            {{ form.username(class="form-control", placeholder="Ingrese su nombre de usuario") }}
-                        </div>
+                    <!-- Usuario -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa fa-user me-1"></i> Usuario</label>
+                        {{ form.username(class="form-control form-control-lg rounded-pill", id="username", placeholder="Ingrese su nombre de usuario") }}
+                        <span class="error" id="userError"></span>
+                    </div>
 
-                        <div class="mb-3">
-                            {{ form.emailname.label(class="form-label") }}
-                            {{ form.emailname(class="form-control", placeholder="Ingrese su correo") }}
-                        </div>
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa fa-envelope me-1"></i> Correo</label>
+                        {{ form.emailname(class="form-control form-control-lg rounded-pill", id="emailname", placeholder="Ingrese su correo") }}
+                        <span class="error" id="emailError"></span>
+                    </div>
 
-                        <div class="mb-3">
-                            {{ form.password.label(class="form-label") }}
-                            {{ form.password(class="form-control", placeholder="Ingrese su contraseña") }}
-                        </div>
+                    <!-- Contraseña -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold"><i class="fa fa-lock me-1"></i> Contraseña</label>
+                        {{ form.password(class="form-control form-control-lg rounded-pill", id="password", placeholder="Ingrese su contraseña") }}
+                        <span class="error" id="passError"></span>
+                    </div>
 
-                        <div class="d-grid">
-                            {{ form.submit(class="btn btn-primary") }}
-                        </div>
-                    </form>
+                    <!-- Botón -->
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm") }}
+                    </div>
+                </form>
+
+                <!-- Links -->
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('auth.register') }}" class="text-decoration-none">¿No tienes cuenta? <b>Regístrate</b></a><br>
+                    <a href="#" class="text-decoration-none text-muted">¿Olvidaste tu contraseña?</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
+<!-- FontAwesome para íconos -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", function(event) {
+    let valid = true;
+
+    // Usuario
+    const username = document.getElementById("username").value.trim();
+    if (username === "") {
+        document.getElementById("userError").textContent = "El usuario es obligatorio";
+        valid = false;
+    } else {
+        document.getElementById("userError").textContent = "";
+    }
+
+    // Email
+    const email = document.getElementById("emailname").value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        document.getElementById("emailError").textContent = "Ingrese un correo válido";
+        valid = false;
+    } else {
+        document.getElementById("emailError").textContent = "";
+    }
+
+    // Contraseña
+    const password = document.getElementById("password").value;
+    if (password.length < 6) {
+        document.getElementById("passError").textContent = "La contraseña debe tener al menos 6 caracteres";
+        valid = false;
+    } else {
+        document.getElementById("passError").textContent = "";
+    }
+
+    if (!valid) {
+        event.preventDefault();
+    }
+});
+</script>
+
+<style>
+.error {
+    color: red;
+    font-size: 13px;
+    margin-left: 5px;
+}
+</style>
+{% endblock %}
