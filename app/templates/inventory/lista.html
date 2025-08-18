@@ -2,96 +2,107 @@
 {% block content %}
 
 <div class="container mt-4">
-  <h2 class="text-center mb-4">Lista de Repuestos</h2>
+  <h2 class="text-center mb-4">📦 Lista de Repuestos</h2>
 
-<!-- FORMULARIO DE FILTROS -->
-<form method="get" class="row g-3 mb-4 align-items-end">
-  <!-- Ordenar -->
-  <div class="col-md-3">
-    <label for="ordenar" class="form-label">Ordenar por:</label>
-    <select name="ordenar" id="ordenar" class="form-select" onchange="this.form.submit()">
-      <option value="" {% if not request.args.get('ordenar') %}selected{% endif %}>Seleccione</option>
-      <option value="marca" {% if request.args.get('ordenar') == 'marca' %}selected{% endif %}>Marca</option>
-      <option value="modelo" {% if request.args.get('ordenar') == 'modelo' %}selected{% endif %}>Modelo</option>
-      <option value="precio_c" {% if request.args.get('ordenar') == 'precio_c' %}selected{% endif %}>Precio de compra</option>
-      <option value="precio_v" {% if request.args.get('ordenar') == 'precio_v' %}selected{% endif %}>Precio de venta</option>
-    </select>
-  </div>
-  <!-- Buscar -->
-  <div class="col-md-3">
-    <label for="busqueda" class="form-label">Buscar repuesto:</label>
-    <input type="text" name="busqueda" id="busqueda" 
-           class="form-control" 
-           value="{{ request.args.get('busqueda', '') }}">
-  </div>
+  <!-- FORMULARIO DE FILTROS -->
+  <form method="get" class="row g-3 mb-4 align-items-end">
+    <!-- Ordenar -->
+    <div class="col-md-3">
+      <label for="ordenar" class="form-label">Ordenar por:</label>
+      <select name="ordenar" id="ordenar" class="form-select" onchange="this.form.submit()">
+        <option value="" {% if not request.args.get('ordenar') %}selected{% endif %}>Seleccione</option>
+        <option value="marca" {% if request.args.get('ordenar') == 'marca' %}selected{% endif %}>Marca</option>
+        <option value="modelo" {% if request.args.get('ordenar') == 'modelo' %}selected{% endif %}>Modelo</option>
+        <option value="precio_c" {% if request.args.get('ordenar') == 'precio_c' %}selected{% endif %}>Precio compra</option>
+        <option value="precio_v" {% if request.args.get('ordenar') == 'precio_v' %}selected{% endif %}>Precio venta</option>
+      </select>
+    </div>
 
-  <!-- Categoría -->
-  <div class="col-md-3">
-    <label for="categoria" class="form-label">Filtrar por categoría:</label>
-    <select name="categorias" id="categorias" class="form-select" onchange="this.form.submit()">
-      <option value="" {% if not request.args.get('categorias') %}selected{% endif %}>Todas</option>
-      <option value="bajos" {% if request.args.get('filtro') == 'bajos' %}selected{% endif %}>Stock bajo</option>
-      {% for cat in categorias %}
-        <option value="{{ cat.nombre }}" {% if request.args.get('categorias') == cat.nombre %}selected{% endif %}>
-          {{ cat.nombre }}
-        </option>
-      {% endfor %}
-    </select>
-  </div>
+    <!-- Buscar -->
+    <div class="col-md-3">
+      <label for="busqueda" class="form-label">Buscar:</label>
+      <input type="text" name="busqueda" id="busqueda" class="form-control"
+             placeholder="Marca, modelo, código..."
+             value="{{ request.args.get('busqueda', '') }}">
+    </div>
 
-  <!-- Botón borrar filtros -->
-  <div class="col-md-3 d-flex">
-    <a href="{{ url_for('inventory.lista') }}" 
-       class="btn btn-outline-danger w-100">
-       Borrar filtros
-    </a>
-  </div>
-</form>
+    <!-- Categoría -->
+    <div class="col-md-3">
+      <label for="categoria" class="form-label">Categoría:</label>
+      <select name="categorias" id="categorias" class="form-select" onchange="this.form.submit()">
+        <option value="" {% if not request.args.get('categorias') %}selected{% endif %}>Todas</option>
+        <option value="bajos" {% if request.args.get('filtro') == 'bajos' %}selected{% endif %}>Stock bajo</option>
+        {% for cat in categorias %}
+          <option value="{{ cat.nombre }}" {% if request.args.get('categorias') == cat.nombre %}selected{% endif %}>
+            {{ cat.nombre }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
 
+    <!-- Botón borrar filtros -->
+    <div class="col-md-3 d-flex">
+      <a href="{{ url_for('inventory.lista') }}" class="btn btn-outline-danger w-100">
+        ❌ Borrar filtros
+      </a>
+    </div>
+  </form>
 
-
-  <!-- BOTÓN NUEVO REPUESTO -->
+  <!-- BOTONES SUPERIORES -->
   <div class="mb-3 text-end">
-    <a href="{{ url_for('inventory.crear_categorias') }}" class="btn btn-outline-primary">Agregar categoría</a>
-    <a href="{{ url_for('inventory.nuevo') }}" class="btn btn-outline-success">Agregar nuevo</a>
+    <a href="{{ url_for('inventory.crear_categorias') }}" class="btn btn-outline-primary me-2">➕ Categoría</a>
+    <a href="{{ url_for('inventory.nuevo') }}" class="btn btn-success">📄 Nuevo repuesto</a>
   </div>
 
   <!-- LISTADO EN TABLA -->
-  <table class="table table-striped table-hover">
-    <thead class="table-dark">
-      <tr>
-        <th>Código</th>
-        <th>Marca</th>
-        <th>Modelo</th>
-        <th>Categoría</th>
-        <th>Cantidad</th>
-        <th>Precio de compra</th>
-        <th>Precio de venta</th>
-        <th>Compatibilidad</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for repuesto in repuestos %}
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle text-center">
+      <thead class="table-dark">
         <tr>
-          <td>{{ repuesto.codigo }}</td>
-          <td>{{ repuesto.marca }}</td>
-          <td>{{ repuesto.modelo }}</td>
-          <td>{{ repuesto.categoria.nombre }}</td>
-          <td>{{ repuesto.cantidad }}</td>
-          <td>${{ repuesto.precio_c }}</td>
-          <td>${{ repuesto.precio_v }}</td>
-          <td>{{ repuesto.compatibilidad }}</td>
-          <td>
-            <a href="{{ url_for('inventory.editar', id=repuesto.id) }}" class="btn btn-sm btn-warning">Editar</a>
-            <a href="{{ url_for('inventory.eliminar', id=repuesto.id) }}" class="btn btn-sm btn-danger">Eliminar</a>
-            <a href="{{ url_for('inventory.agregar_instalacion', id=repuesto.id) }}" class="btn btn-sm btn-info">Seleccionar</a>
-            <a href="{{ url_for('inventory.ver', id=repuesto.id) }}" class="btn btn-sm btn-secondary">Ver</a>
-          </td>
+          <th>Código</th>
+          <th>Marca</th>
+          <th>Modelo</th>
+          <th>Categoría</th>
+          <th>Cantidad</th>
+          <th>Compra</th>
+          <th>Venta</th>
+          <th>Compatibilidad</th>
+          <th>Acciones</th>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {% for repuesto in repuestos %}
+          <tr>
+            <td>{{ repuesto.codigo }}</td>
+            <td>{{ repuesto.marca }}</td>
+            <td>{{ repuesto.modelo }}</td>
+            <td>
+              <span class="badge bg-info text-dark">{{ repuesto.categoria.nombre }}</span>
+            </td>
+            <td>
+              {% if repuesto.cantidad < 1 %}
+                <span class="badge bg-danger">{{ repuesto.cantidad }}</span>
+              {% else %}
+                <span class="badge bg-success">{{ repuesto.cantidad }}</span>
+              {% endif %}
+            </td>
+            <td>${{ "{:,.0f}".format(repuesto.precio_c) }}</td>
+            <td>${{ "{:,.0f}".format(repuesto.precio_v) }}</td>
+            <td>{{ repuesto.compatibilidad }}</td>
+            <td>
+              <div class="btn-group" role="group">
+                <a href="{{ url_for('inventory.ver', id=repuesto.id) }}" class="btn btn-sm btn-secondary" title="Ver">👁</a>
+                <a href="{{ url_for('inventory.editar', id=repuesto.id) }}" class="btn btn-sm btn-warning" title="Editar">✏️</a>
+                <a href="{{ url_for('inventory.eliminar', id=repuesto.id) }}" class="btn btn-sm btn-danger" title="Eliminar">🗑</a>
+                <a href="{{ url_for('inventory.agregar_instalacion', id=repuesto.id) }}" class="btn btn-sm btn-info" title="Instalar">🔧</a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 
 {% endblock %}
+

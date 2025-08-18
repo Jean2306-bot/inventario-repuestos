@@ -4,32 +4,59 @@
 <div class="container mt-5">
     <h2 class="mb-4 text-center">📊 Balance General</h2>
 
-    <table class="table table-bordered table-striped text-center">
-        <thead class="table-dark">
-            <tr>
-                <th>Concepto</th>
-                <th>Valor</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>💰 Ganancias Totales</td>
-                <td>${{ "{:,.0f}".format(ganancias) }}</td>
-            </tr>
-            <tr>
-                <td>📦 Capital Invertido (Inventario actual)</td>
-                <td>${{ "{:,.0f}".format(capital) }}</td>
-            </tr>
-            <tr>
-                <td>🏷️ Valor de Inventario Actual (precio venta)</td>
-                <td>${{ "{:,.0f}".format(valor_inventario) }}</td>
-            </tr>
-            <tr>
-                <td>🛒 Total Ventas</td>
-                <td>${{ "{:,.0f}".format(ventas) }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="row g-4">
+        <!-- Ganancias Totales -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-lg border-0 rounded-4 text-center p-3 bg-light">
+                <div class="icon bg-success text-white rounded-circle mx-auto mb-3 p-3 fs-4">
+                    💰
+                </div>
+                <h5 class="fw-bold">Ganancias Totales</h5>
+                <p class="fs-4 text-success mb-0">
+                    ${{ "{:,.0f}".format(ganancias) }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Capital Invertido -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-lg border-0 rounded-4 text-center p-3 bg-light">
+                <div class="icon bg-primary text-white rounded-circle mx-auto mb-3 p-3 fs-4">
+                    📦
+                </div>
+                <h5 class="fw-bold">Capital Invertido</h5>
+                <p class="fs-4 text-primary mb-0">
+                    ${{ "{:,.0f}".format(capital) }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Valor Inventario -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-lg border-0 rounded-4 text-center p-3 bg-light">
+                <div class="icon bg-warning text-white rounded-circle mx-auto mb-3 p-3 fs-4">
+                    🏷️
+                </div>
+                <h5 class="fw-bold">Inventario Actual</h5>
+                <p class="fs-4 text-warning mb-0">
+                    ${{ "{:,.0f}".format(valor_inventario) }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Total Ventas -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-lg border-0 rounded-4 text-center p-3 bg-light">
+                <div class="icon bg-danger text-white rounded-circle mx-auto mb-3 p-3 fs-4">
+                    🛒
+                </div>
+                <h5 class="fw-bold">Total Ventas</h5>
+                <p class="fs-4 text-danger mb-0">
+                    ${{ "{:,.0f}".format(ventas) }}
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
