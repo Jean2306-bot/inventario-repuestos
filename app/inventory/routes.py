@@ -23,7 +23,7 @@ def lista():
 
     # Filtro por cantidad baja
     if filtro == 'bajos':
-        query = query.filter(Repuesto.cantidad <= 3).order_by(Repuesto.cantidad.asc())
+        query = query.filter(Repuesto.cantidad <= 1).order_by(Repuesto.cantidad.asc())
     else:
         query = query.order_by(Repuesto.modelo.asc())
 

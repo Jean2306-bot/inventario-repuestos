@@ -5,20 +5,39 @@
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-8">
-      <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white text-center">
-          <h4>Detalles del Repuesto</h4>
-            <a href="{{ url_for('inventory.lista') }}" class="btn btn-secondary btn-sm float-end">X</a>
+      <div class="card shadow-lg border-0">
+        
+        <!-- Encabezado -->
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">
+            <i class="bi bi-gear-fill me-2"></i> Detalles del Repuesto
+          </h4>
+          <a href="{{ url_for('inventory.lista') }}" class="btn btn-light btn-sm">
+            <i class="bi bi-x-lg"></i>
+          </a>
         </div>
+
+        <!-- Cuerpo -->
         <div class="card-body">
-          <p><strong>Código:</strong> {{ repuesto.codigo }}</p>
-          <p><strong>Marca:</strong> {{ repuesto.marca }}</p>
-          <p><strong>Modelo:</strong> {{ repuesto.modelo }}</p>
-          <p><strong>Precio de Costo:</strong> {{ repuesto.precio_c }}</p>
-          <p><strong>Precio de Venta:</strong> {{ repuesto.precio_v }}</p>
-          <p><strong>Cantidad:</strong> {{ repuesto.cantidad }}</p>
-          <p><strong>Compatibilidad:</strong> {{ repuesto.compatibilidad }}</p>
-          <p><strong>Fecha de Ingreso:</strong> {{ repuesto.fecha_ingreso }}</p>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>Código:</strong> {{ repuesto.codigo }}</li>
+            <li class="list-group-item"><strong>Marca:</strong> {{ repuesto.marca }}</li>
+            <li class="list-group-item"><strong>Modelo:</strong> {{ repuesto.modelo }}</li>
+            <li class="list-group-item">
+              <strong>Precio de Costo:</strong> 
+              <span class="badge bg-danger">${{ "{:,.0f}".format(repuesto.precio_c) }}</span>
+            </li>
+            <li class="list-group-item">
+              <strong>Precio de Venta:</strong> 
+              <span class="badge bg-success">${{ "{:,.0f}".format(repuesto.precio_v) }}</span>
+            </li>
+            <li class="list-group-item">
+              <strong>Cantidad:</strong> 
+              <span class="badge bg-warning text-dark">{{ repuesto.cantidad }}</span>
+            </li>
+            <li class="list-group-item"><strong>Compatibilidad:</strong> {{ repuesto.compatibilidad }}</li>
+            <li class="list-group-item"><strong>Fecha de Ingreso:</strong> {{ repuesto.fecha_ingreso.strftime('%d/%m/%Y') }}</li>
+          </ul>
         </div>
       </div>
     </div>

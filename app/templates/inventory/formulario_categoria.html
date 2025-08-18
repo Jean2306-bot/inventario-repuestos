@@ -1,10 +1,44 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ titulo }}</h2>
-<form method="POST">
-  {{ form.hidden_tag() }}
-  {{ form.nombre.label }}<br>
-  {{ form.nombre(size=32) }}<br>
-  {{ form.submit() }}
-</form>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow rounded-4 border-0">
+                <div class="card-body p-4">
+                    <h3 class="text-center mb-4 text-primary fw-bold">
+                        {{ titulo }}
+                    </h3>
+
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+
+                        <div class="mb-3">
+                            {{ form.nombre.label(class="form-label fw-semibold") }}
+                            {{ form.nombre(class="form-control form-control-lg", placeholder="Ingrese el nombre de la categoría") }}
+                        </div>
+
+                        <div class="d-grid">
+                          {{ form.submit(class="btn btn-primary btn-lg rounded-pill shadow-sm") }}
+                        </div>
+                        <div class="text-center mt-3">
+                          <a href="{{ url_for('inventory.lista') }}" class="text-decoration-none text-secondary">
+                            Cancelar
+                          </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        background: #ffffff;
+    }
+    h3 {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        letter-spacing: 0.5px;
+    }
+</style>
 {% endblock %}

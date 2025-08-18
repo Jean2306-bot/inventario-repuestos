@@ -4,43 +4,56 @@
 <div class="container mt-4">
   <h2 class="text-center mb-4">Lista de Repuestos</h2>
 
-  <!-- FORMULARIO DE FILTROS -->
-  <form method="get" class="row g-3 mb-4">
-    <div class="col-md-4">
-      <label for="categoria" class="form-label">Filtrar por categoría:</label>
-      <select name="categorias" id="categorias" class="form-select" onchange="this.form.submit()">
-        <option value="" {% if not request.args.get('categorias') %}selected{% endif %}>Todas</option>
-        {% for cat in categorias %}
-          <option value="{{ cat.nombre }}" {% if request.args.get('categorias') == cat.nombre %}selected{% endif %}>
-            {{ cat.nombre }}
-          </option>
-        {% endfor %}
-      </select>
-      <!-- Botón para borrar filtros -->
-      <a href="{{ url_for('inventory.lista') }}" class="btn btn-outline-danger mt-2">Borrar filtros</a>
-      <a href="{{ url_for('inventory.crear_categorias') }}" class="btn btn-primary mt-2">Agregar categoría</a>
-    </div>
-    
+<!-- FORMULARIO DE FILTROS -->
+<form method="get" class="row g-3 mb-4 align-items-end">
+  <!-- Ordenar -->
+  <div class="col-md-3">
+    <label for="ordenar" class="form-label">Ordenar por:</label>
+    <select name="ordenar" id="ordenar" class="form-select" onchange="this.form.submit()">
+      <option value="" {% if not request.args.get('ordenar') %}selected{% endif %}>Seleccione</option>
+      <option value="marca" {% if request.args.get('ordenar') == 'marca' %}selected{% endif %}>Marca</option>
+      <option value="modelo" {% if request.args.get('ordenar') == 'modelo' %}selected{% endif %}>Modelo</option>
+      <option value="precio_c" {% if request.args.get('ordenar') == 'precio_c' %}selected{% endif %}>Precio de compra</option>
+      <option value="precio_v" {% if request.args.get('ordenar') == 'precio_v' %}selected{% endif %}>Precio de venta</option>
+    </select>
+  </div>
+  <!-- Buscar -->
+  <div class="col-md-3">
+    <label for="busqueda" class="form-label">Buscar repuesto:</label>
+    <input type="text" name="busqueda" id="busqueda" 
+           class="form-control" 
+           value="{{ request.args.get('busqueda', '') }}">
+  </div>
 
-    <div class="col-md-4">
-      <label for="busqueda" class="form-label">Buscar repuesto:</label>
-      <input type="text" name="busqueda" id="busqueda" class="form-control" value="{{ request.args.get('busqueda', '') }}">
-    </div>
+  <!-- Categoría -->
+  <div class="col-md-3">
+    <label for="categoria" class="form-label">Filtrar por categoría:</label>
+    <select name="categorias" id="categorias" class="form-select" onchange="this.form.submit()">
+      <option value="" {% if not request.args.get('categorias') %}selected{% endif %}>Todas</option>
+      <option value="bajos" {% if request.args.get('filtro') == 'bajos' %}selected{% endif %}>Stock bajo</option>
+      {% for cat in categorias %}
+        <option value="{{ cat.nombre }}" {% if request.args.get('categorias') == cat.nombre %}selected{% endif %}>
+          {{ cat.nombre }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
 
-    <div class="col-md-4">
-      <label for="filtro" class="form-label">Stock:</label>
-      <select name="filtro" id="filtro" class="form-select" onchange="this.form.submit()">
-        <option value="">Todos</option>
-        <option value="bajos" {% if request.args.get('filtro') == 'bajos' %}selected{% endif %}>Stock bajo (≤ 3)</option>
-      </select>
-    </div>
+  <!-- Botón borrar filtros -->
+  <div class="col-md-3 d-flex">
+    <a href="{{ url_for('inventory.lista') }}" 
+       class="btn btn-outline-danger w-100">
+       Borrar filtros
+    </a>
+  </div>
 </form>
 
 
 
   <!-- BOTÓN NUEVO REPUESTO -->
   <div class="mb-3 text-end">
-    <a href="{{ url_for('inventory.nuevo') }}" class="btn btn-success">Agregar nuevo</a>
+    <a href="{{ url_for('inventory.crear_categorias') }}" class="btn btn-outline-primary">Agregar categoría</a>
+    <a href="{{ url_for('inventory.nuevo') }}" class="btn btn-outline-success">Agregar nuevo</a>
   </div>
 
   <!-- LISTADO EN TABLA -->

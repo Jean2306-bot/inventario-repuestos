@@ -13,51 +13,96 @@
 
 </head>
 <body>
-    <!-- Navbar Bootstrap -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">Tu Nubegen</a>
+    <!-- Navbar Bootstrap Mejorada -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+  <div class="container-fluid">
+    
+    <!-- Logo + Nombre -->
+    <a class="navbar-brand d-flex align-items-center fw-bold" href="{{ url_for('main.index') }}">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" 
+           alt="Logo Nubegen" width="40" height="40" 
+           class="me-2 rounded-circle shadow-sm">
+      <span>Tu <span class="text-primary">Nubegen</span></span>
+    </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
+    <!-- Estilos personalizados -->
+    <style>
+      .navbar-brand {
+        font-size: 1.4rem;
+        letter-spacing: 1px;
+        transition: all 0.3s ease-in-out;
+      }
+      .navbar-brand:hover {
+        color: #0d6efd !important;
+        transform: scale(1.05);
+      }
+      .navbar-brand img {
+        transition: transform 0.3s ease;
+      }
+      .navbar-brand:hover img {
+        transform: rotate(-5deg) scale(1.1);
+      }
+      .navbar-nav .nav-link {
+        transition: color 0.3s ease, transform 0.2s ease;
+      }
+      .navbar-nav .nav-link:hover {
+        color: #0d6efd !important;
+        transform: scale(1.05);
+      }
+    </style>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-              <ul class="navbar-nav ms-auto">
-                    {% if current_user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.index') }}">Inicio</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('inventory.lista') }}">Repuestos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('inventory.ver_instalados') }}">Instalados</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('balance.balance') }}">Balance</a>
-                        </li>
-                        <li class="nav-item">
-                            <span class="nav-link disabled">Hola, {{ current_user.username }}</span>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">Salir</a>
-                        </li>
-                        
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.login') }}">Iniciar sesión</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.register') }}">Registrarse</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <!-- Botón menú responsive -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Menú -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-center">
+        {% if current_user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}" href="{{ url_for('main.index') }}">Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'inventory.lista' %}active{% endif %}" href="{{ url_for('inventory.lista') }}">Repuestos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'inventory.ver_instalados' %}active{% endif %}" href="{{ url_for('inventory.ver_instalados') }}">Instalados</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'balance.balance' %}active{% endif %}" href="{{ url_for('balance.balance') }}">Balance</a>
+          </li>
+
+          <!-- Saludo usuario -->
+          <li class="nav-item mx-2">
+            <span class="badge bg-secondary">👋 Hola, {{ current_user.username }}</span>
+          </li>
+
+          <!-- Botón salir -->
+          <li class="nav-item">
+            <a class="btn btn-sm btn-danger ms-2" href="{{ url_for('auth.logout') }}">Salir</a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'auth.login' %}active{% endif %}" href="{{ url_for('auth.login') }}">Iniciar sesión</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'auth.register' %}active{% endif %}" href="{{ url_for('auth.register') }}">Registrarse</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Ajuste para que el contenido no quede debajo de la navbar fija -->
+<style>
+  body {
+    padding-top: 70px; /* altura navbar */
+  }
+</style>
+
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div id="flash-overlay">
