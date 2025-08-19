@@ -18,8 +18,21 @@ def lista():
     categoria_nombre = request.args.get('categorias')
     busqueda = request.args.get('busqueda')
     codigo = request.args.get('codigo')
+    ordenar = request.args.get('ordenar') 
 
     query = Repuesto.query.filter(Repuesto.usuario_id == current_user.id)
+
+    # aplicar orden según lo seleccionado
+    if ordenar == "marca":
+        query = query.order_by(Repuesto.marca.asc())
+    elif ordenar == "modelo":
+        query = query.order_by(Repuesto.modelo.asc())
+    elif ordenar == "precio_c":
+        query = query.order_by(Repuesto.precio_c.asc())
+    elif ordenar == "precio_v":
+        query = query.order_by(Repuesto.precio_v.asc())
+    elif ordenar == "codigo":
+        query = query.order_by(Repuesto.codigo.asc())
 
     # Filtro por cantidad baja
     if filtro == 'bajos':

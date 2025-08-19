@@ -15,6 +15,7 @@
         <option value="modelo" {% if request.args.get('ordenar') == 'modelo' %}selected{% endif %}>Modelo</option>
         <option value="precio_c" {% if request.args.get('ordenar') == 'precio_c' %}selected{% endif %}>Precio compra</option>
         <option value="precio_v" {% if request.args.get('ordenar') == 'precio_v' %}selected{% endif %}>Precio venta</option>
+        <option value="codigo" {% if request.args.get('ordenar') == 'codigo' %}selected{% endif %}>Código</option>
       </select>
     </div>
 
