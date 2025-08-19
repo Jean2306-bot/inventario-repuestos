@@ -9,6 +9,7 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
     
 
 </head>
@@ -19,7 +20,7 @@
     
     <!-- Logo + Nombre -->
     <a class="navbar-brand d-flex align-items-center fw-bold" href="{{ url_for('main.index') }}">
-      <img src="{{ url_for('static', filename='img/logo.png') }}" 
+      <img src="{{ url_for('static', filename='img/logo.jpg') }}" 
            alt="Logo Nubegen" width="40" height="40" 
            class="me-2 rounded-circle shadow-sm">
       <span>Tu <span class="text-primary">Nubegen</span></span>

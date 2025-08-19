@@ -13,7 +13,7 @@ def register():
         existing_user = User.query.filter_by(username=form.username.data).first()
         if existing_user:
             flash('El nombre de usuario ya existe', 'error')
-            return render_template('register.html', form=form)
+            return render_template('/auth/register.html', form=form)
 
         hashed_pw = generate_password_hash(form.password.data)
         user = User(username = form.username.data, email = form.email.data, password = hashed_pw)
@@ -22,7 +22,7 @@ def register():
         flash('Registration successful!', 'success')
         return redirect(url_for('auth.login'))
     else:
-        return render_template('register.html', form=form)
+        return render_template('/auth/register.html', form=form)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -35,7 +35,7 @@ def login():
             return redirect(url_for('main.index'))
         else:
             flash('Invalid username or password', 'danger')
-    return render_template('login.html', form=form)
+    return render_template('/auth/login.html', form=form)
 
 @auth_bp.route('/logout')
 @login_required

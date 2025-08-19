@@ -15,7 +15,7 @@ def index():
     # Convertir categorías a diccionario
     cat_dict = {cat: count for cat, count in categorias}
 
-    return render_template('index.html',
+    return render_template('/main/index.html',
                            total_repuestos=total_repuestos,
                            categorias=cat_dict,
                            repuestos_bajos=repuestos_bajos,
